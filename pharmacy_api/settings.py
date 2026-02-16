@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'medicines',
     'orders',
     'pharmacies',
-    'prescriptons',
+    'prescriptions',
     'users'
 ]
 
@@ -82,7 +82,11 @@ WSGI_APPLICATION = 'pharmacy_api.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
     }
 }
 
@@ -122,3 +126,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+AUTH_USER_MODEL = 'users.User'
