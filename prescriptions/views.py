@@ -17,4 +17,11 @@ class PrescriptionViewSet(viewsets.ModelViewSet):
         if user.role == 'admin':
             return Prescription.objects.all()
 
+        if user.role == 'pharmacy':
+            try:
+                return Prescription.objects.filter(pharmacy=user.pharmacy_profile)
+            except Exception:
+                return Prescription.objects.none()
+
+        # patient
         return Prescription.objects.filter(patient=user)
