@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}Register Pharmacy — MedLink{% endblock %}
+{% block content %}
+
+<h2>Pharmacy Registration</h2>
+<p>Your pharmacy will require admin verification before going live.</p>
+
+<form method="post">
+  {% csrf_token %}
+
+  <h3>Account Details</h3>
+  <p>
+    <label>Username</label><br>
+    <input type="text" name="username" required>
+  </p>
+  <p>
+    <label>Email</label><br>
+    <input type="email" name="email" required>
+  </p>
+  <p>
+    <label>Password</label><br>
+    <input type="password" name="password" required>
+  </p>
+  <p>
+    <label>Phone Number</label><br>
+    <input type="tel" name="phone_number">
+  </p>
+
+  <h3>Pharmacy Details</h3>
+  <p>
+    <label>Pharmacy Name</label><br>
+    <input type="text" name="pharmacy_name" required>
+  </p>
+  <p>
+    <label>License Number</label><br>
+    <input type="text" name="license_number" required>
+  </p>
+  <p>
+    <label>Address</label><br>
+    <textarea name="address" required></textarea>
+  </p>
+
+  <button type="submit">Submit for Verification</button>
+</form>
+
+<p><a href="{% url 'login' %}">Already have an account? Login</a></p>
+
+{% endblock %}

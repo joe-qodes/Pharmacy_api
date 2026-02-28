@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard — MedLink{% endblock %}
+{% block content %}
+
+<h2>Admin Dashboard</h2>
+<p>Welcome, {{ user.username }}</p>
+<p>Use the <a href="/admin/">Django admin panel</a> to verify pharmacies, manage medications, and oversee users.</p>
+
+{% endblock %}

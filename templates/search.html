@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}Search Medications — MedLink{% endblock %}
+{% block content %}
+
+<h2>Search Medications</h2>
+
+<form method="get">
+  <label>Medication Name:</label>
+  <input type="text" name="q" value="{{ query }}">
+
+  <label>Pharmacy:</label>
+  <input type="text" name="pharmacy" value="{{ pharmacy_filter }}">
+
+  <button type="submit">Search</button>
+  {% if query or pharmacy_filter %}
+    <a href="{% url 'search' %}">Clear</a>
+  {% endif %}
+</form>
+
+<hr>
+
+{% if query or pharmacy_filter %}
+  <h3>Results ({{ results|length }})</h3>
+  {% if results %}
+    <table border="1" cellpadding="5">
+      <thead>
+        <tr>
+          <th>Medication</th>
+          <th>Category</th>
+          <th>Pharmacy</th>
+          <th>Price</th>
+          <th>Stock</th>
+          <th>Order</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for pm in results %}
+        <tr>
+          <td>{{ pm.medication.name }}</td>
+          <td>{{ pm.medication.category }}</td>
+          <td>{{ pm.pharmacy.name }}</td>
+          <td>${{ pm.price }}</td>
+          <td>{{ pm.stock }}</td>
+          <td>
+            {% if pm.stock > 0 %}
+              <form method="post" action="{% url 'place_order' %}">
+                {% csrf_token %}
+                <input type="hidden" name="pharmacy_medication_id" value="{{ pm.id }}">
+                <button type="submit">Order</button>
+              </form>
+            {% else %}
+              Out of stock
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No results found.</p>
+  {% endif %}
+{% endif %}
+
+{% endblock %}

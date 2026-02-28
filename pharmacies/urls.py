@@ -1,7 +1,7 @@
-from rest_framework.routers import DefaultRouter
-from .views import PharmacyViewSet
+from django.urls import path
+from .views import update_stock, add_medication
 
-router = DefaultRouter()
-router.register('', PharmacyViewSet)
-
-urlpatterns = router.urls
+urlpatterns = [
+    path('inventory/<int:pm_id>/update/', update_stock, name='update_stock'),
+    path('inventory/add/', add_medication, name='add_medication'),
+]

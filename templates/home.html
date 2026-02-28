@@ -1,3 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Home — MedLink{% endblock %}
+{% block content %}
+
 <h1>Pharmacy System</h1>
-<a href="/api/accounts/register/">Register</a>
-<a href="/api/accounts/login/">Login</a>
+<p>Connect patients with pharmacies.</p>
+
+<a href="{% url 'register_patient' %}">Register as Patient</a> |
+<a href="{% url 'register_pharmacy' %}">Register as Pharmacy</a> |
+<a href="{% url 'login' %}">Login</a>
+
+{% endblock %}

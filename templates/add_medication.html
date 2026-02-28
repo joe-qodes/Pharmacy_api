@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}Add Medication — MedLink{% endblock %}
+{% block content %}
+
+<h2>Add Medication to Inventory</h2>
+
+{% if medications %}
+  <form method="post">
+    {% csrf_token %}
+    <p>
+      <label>Medication</label><br>
+      <select name="medication_id" required>
+        <option value="">-- Select --</option>
+        {% for med in medications %}
+          <option value="{{ med.id }}">{{ med.name }} ({{ med.category }})</option>
+        {% endfor %}
+      </select>
+    </p>
+    <p>
+      <label>Stock Quantity</label><br>
+      <input type="number" name="stock" min="0" required>
+    </p>
+    <p>
+      <label>Price ($)</label><br>
+      <input type="number" name="price" min="0" step="0.01" required>
+    </p>
+    <button type="submit">Add to Inventory</button>
+    <a href="{% url 'dashboard' %}">Cancel</a>
+  </form>
+{% else %}
+  <p>No medications exist in the system yet. An admin must add medications via the admin panel first.</p>
+  <a href="{% url 'dashboard' %}">Back to Dashboard</a>
+{% endif %}
+
+{% endblock %}
