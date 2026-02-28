@@ -22,4 +22,4 @@ urlpatterns = [
     path('api/medications/', include('medications.api_urls')),
     path('api/prescriptions/', include('prescriptions.api_urls')),
     path('api/orders/', include('orders.api_urls')),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
