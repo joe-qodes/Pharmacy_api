@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% block title %}Pharmacy Dashboard — MedLink{% endblock %}
+{% block content %}
+
+<h2>{{ pharmacy.name }} — Dashboard</h2>
+
+<p><a href="{% url 'add_medication' %}">+ Add Medication to Inventory</a></p>
+
+<h3>Pending Orders</h3>
+{% if pending_orders %}
+  <table border="1" cellpadding="5">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Patient</th>
+        <th>Medication</th>
+        <th>Date</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for order in pending_orders %}
+      <tr>
+        <td>{{ order.id }}</td>
+        <td>{{ order.patient.username }}</td>
+        <td>{{ order.medication.name }}</td>
+        <td>{{ order.created_at|date:"M j, Y" }}</td>
+        <td>
+          <form method="post" action="{% url 'manage_order' order.id %}" style="display:inline">
+            {% csrf_token %}
+            <input type="hidden" name="status" value="accepted">
+            <button type="submit">Accept</button>
+          </form>
+          <form method="post" action="{% url 'manage_order' order.id %}" style="display:inline">
+            {% csrf_token %}
+            <input type="hidden" name="status" value="rejected">
+            <button type="submit">Reject</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p>No pending orders.</p>
+{% endif %}
+
+<h3>All Orders</h3>
+{% if all_orders %}
+  <table border="1" cellpadding="5">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Patient</th>
+        <th>Medication</th>
+        <th>Status</th>
+        <th>Date</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for order in all_orders %}
+      <tr>
+        <td>{{ order.id }}</td>
+        <td>{{ order.patient.username }}</td>
+        <td>{{ order.medication.name }}</td>
+        <td>{{ order.status }}</td>
+        <td>{{ order.created_at|date:"M j, Y" }}</td>
+        <td>
+          {% if order.status == 'accepted' %}
+            <form method="post" action="{% url 'manage_order' order.id %}" style="display:inline">
+              {% csrf_token %}
+              <input type="hidden" name="status" value="completed">
+              <button type="submit">Mark Complete</button>
+            </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p>No orders yet.</p>
+{% endif %}
+
+<h3>Inventory</h3>
+{% if inventory %}
+  <table border="1" cellpadding="5">
+    <thead>
+      <tr>
+        <th>Medication</th>
+        <th>Category</th>
+        <th>Stock</th>
+        <th>Price</th>
+        <th>Update</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for pm in inventory %}
+      <tr>
+        <td>{{ pm.medication.name }}</td>
+        <td>{{ pm.medication.category }}</td>
+        <td>{{ pm.stock }}</td>
+        <td>${{ pm.price }}</td>
+        <td>
+          <form method="post" action="{% url 'update_stock' pm.id %}" style="display:inline">
+            {% csrf_token %}
+            Stock: <input type="number" name="stock" value="{{ pm.stock }}" min="0" style="width:60px">
+            Price: <input type="number" name="price" value="{{ pm.price }}" min="0" step="0.01" style="width:70px">
+            <button type="submit">Save</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p>No medications in inventory. <a href="{% url 'add_medication' %}">Add one</a></p>
+{% endif %}
+
+{% endblock %}
