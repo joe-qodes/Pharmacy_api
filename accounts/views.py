@@ -114,8 +114,10 @@ def dashboard(request):
         from orders.models import Order
         from medications.models import PharmacyMedication
 
-        pending_orders = Order.objects.filter(pharmacy=pharmacy, status='pending') if pharmacy else []
-        all_orders = Order.objects.filter(pharmacy=pharmacy) if pharmacy else []
+        pending_orders = Order.objects.filter(pharmacy=pharmacy, status='pending').select_related(
+            'patient', 'medication', 'prescription') if pharmacy else []
+        all_orders = Order.objects.filter(pharmacy=pharmacy).select_related(
+            'patient', 'medication', 'prescription') if pharmacy else []
         inventory = PharmacyMedication.objects.filter(pharmacy=pharmacy).select_related('medication') if pharmacy else []
 
         return render(request, 'dashboard_pharmacy.html', {
@@ -127,9 +129,15 @@ def dashboard(request):
 
     elif role == 'patient':
         from orders.models import Order
-        my_orders = Order.objects.filter(patient=request.user).select_related('pharmacy', 'medication')
+        from prescriptions.models import Prescription
+
+        my_orders = Order.objects.filter(patient=request.user).select_related(
+            'pharmacy', 'pharmacy__user', 'medication', 'prescription')
+        my_prescriptions = Prescription.objects.filter(patient=request.user).order_by('-created_at')
+
         return render(request, 'dashboard_patient.html', {
             'my_orders': my_orders,
+            'my_prescriptions': my_prescriptions,
         })
 
     else:  # admin
@@ -141,17 +149,42 @@ def logout_view(request):
     return redirect('home')
 
 
+def upload_prescription(request):
+    if not request.user.is_authenticated or request.user.role != 'patient':
+        return redirect('login')
+
+    if request.method == 'POST':
+        from prescriptions.models import Prescription
+
+        image = request.FILES.get('image')
+        if not image:
+            messages.error(request, 'Please select an image to upload.')
+            return render(request, 'upload_prescription.html')
+
+        Prescription.objects.create(
+            patient=request.user,
+            image=image,
+            status='pending',
+        )
+        messages.success(request, 'Prescription uploaded successfully.')
+        return redirect('dashboard')
+
+    return render(request, 'upload_prescription.html')
+
+
 def search_medications(request):
     if not request.user.is_authenticated:
         return redirect('login')
 
     from medications.models import PharmacyMedication
+    from prescriptions.models import Prescription
+
     results = []
     query = request.GET.get('q', '').strip()
     pharmacy_filter = request.GET.get('pharmacy', '').strip()
 
     if query or pharmacy_filter:
-        qs = PharmacyMedication.objects.select_related('medication', 'pharmacy').filter(stock__gt=0)
+        qs = PharmacyMedication.objects.select_related('medication', 'pharmacy', 'pharmacy__user').filter(stock__gt=0)
         if query:
             qs = qs.filter(medication__name__icontains=query)
         if pharmacy_filter:
@@ -161,11 +194,17 @@ def search_medications(request):
     from pharmacies.models import Pharmacy
     pharmacies = Pharmacy.objects.filter(is_verified=True)
 
+    # Pass patient's prescriptions so they can attach one when ordering
+    my_prescriptions = []
+    if request.user.role == 'patient':
+        my_prescriptions = Prescription.objects.filter(patient=request.user).order_by('-created_at')
+
     return render(request, 'search.html', {
         'results': results,
         'query': query,
         'pharmacy_filter': pharmacy_filter,
         'pharmacies': pharmacies,
+        'my_prescriptions': my_prescriptions,
     })
 
 
@@ -176,8 +215,11 @@ def place_order(request):
     if request.method == 'POST':
         from medications.models import PharmacyMedication
         from orders.models import Order
+        from prescriptions.models import Prescription
 
         pm_id = request.POST.get('pharmacy_medication_id')
+        prescription_id = request.POST.get('prescription_id')
+
         try:
             pm = PharmacyMedication.objects.select_related('pharmacy', 'medication').get(id=pm_id)
         except PharmacyMedication.DoesNotExist:
@@ -188,11 +230,20 @@ def place_order(request):
             messages.error(request, 'This medication is out of stock.')
             return redirect('search')
 
+        # Attach prescription if one was selected
+        prescription = None
+        if prescription_id:
+            try:
+                prescription = Prescription.objects.get(id=prescription_id, patient=request.user)
+            except Prescription.DoesNotExist:
+                pass
+
         Order.objects.create(
             patient=request.user,
             pharmacy=pm.pharmacy,
             medication=pm.medication,
             pharmacy_medication=pm,
+            prescription=prescription,
             status='pending',
         )
         messages.success(request, f'Order placed for {pm.medication.name} at {pm.pharmacy.name}!')

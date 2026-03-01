@@ -8,6 +8,7 @@ from .views import (
     logout_view,
     search_medications,
     place_order,
+    upload_prescription,
 )
 
 urlpatterns = [
@@ -19,4 +20,5 @@ urlpatterns = [
     path('logout/', logout_view, name='logout'),
     path('search/', search_medications, name='search'),
     path('order/place/', place_order, name='place_order'),
+    path('prescriptions/upload/', upload_prescription, name='upload_prescription'),
 ]
