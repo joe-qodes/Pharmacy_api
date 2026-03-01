@@ -13,7 +13,10 @@
       <tr>
         <th>#</th>
         <th>Patient</th>
+        <th>Patient Email</th>
+        <th>Patient Phone</th>
         <th>Medication</th>
+        <th>Prescription</th>
         <th>Date</th>
         <th>Actions</th>
       </tr>
@@ -23,7 +26,16 @@
       <tr>
         <td>{{ order.id }}</td>
         <td>{{ order.patient.username }}</td>
+        <td>{{ order.patient.email }}</td>
+        <td>{{ order.patient.phone_number|default:"—" }}</td>
         <td>{{ order.medication.name }}</td>
+        <td>
+          {% if order.prescription %}
+            <a href="{{ order.prescription.image.url }}" target="_blank">View</a>
+          {% else %}
+            —
+          {% endif %}
+        </td>
         <td>{{ order.created_at|date:"M j, Y" }}</td>
         <td>
           <form method="post" action="{% url 'manage_order' order.id %}" style="display:inline">
@@ -52,7 +64,10 @@
       <tr>
         <th>#</th>
         <th>Patient</th>
+        <th>Patient Email</th>
+        <th>Patient Phone</th>
         <th>Medication</th>
+        <th>Prescription</th>
         <th>Status</th>
         <th>Date</th>
         <th>Action</th>
@@ -63,7 +78,16 @@
       <tr>
         <td>{{ order.id }}</td>
         <td>{{ order.patient.username }}</td>
+        <td>{{ order.patient.email }}</td>
+        <td>{{ order.patient.phone_number|default:"—" }}</td>
         <td>{{ order.medication.name }}</td>
+        <td>
+          {% if order.prescription %}
+            <a href="{{ order.prescription.image.url }}" target="_blank">View</a>
+          {% else %}
+            —
+          {% endif %}
+        </td>
         <td>{{ order.status }}</td>
         <td>{{ order.created_at|date:"M j, Y" }}</td>
         <td>

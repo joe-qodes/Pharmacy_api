@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Upload Prescription — MedLink{% endblock %}
+{% block content %}
+
+<h2>Upload Prescription</h2>
+<p>Upload an image of your prescription. You can attach it to an order when searching for medications.</p>
+
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <p>
+    <label>Prescription Image</label><br>
+    <input type="file" name="image" accept="image/*" required>
+  </p>
+  <button type="submit">Upload</button>
+  <a href="{% url 'dashboard' %}">Cancel</a>
+</form>
+
+{% endblock %}

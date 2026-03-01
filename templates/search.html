@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Search Medications — MedLink{% endblock %}
+{% block title %}Search Medications - PharmAPI{% endblock %}
 {% block content %}
 
 <h2>Search Medications</h2>
@@ -28,6 +28,8 @@
           <th>Medication</th>
           <th>Category</th>
           <th>Pharmacy</th>
+          <th>Address</th>
+          <th>Contact</th>
           <th>Price</th>
           <th>Stock</th>
           <th>Order</th>
@@ -39,6 +41,13 @@
           <td>{{ pm.medication.name }}</td>
           <td>{{ pm.medication.category }}</td>
           <td>{{ pm.pharmacy.name }}</td>
+          <td>{{ pm.pharmacy.address }}</td>
+          <td>
+            {{ pm.pharmacy.user.email }}<br>
+            {% if pm.pharmacy.user.phone_number %}
+              {{ pm.pharmacy.user.phone_number }}
+            {% endif %}
+          </td>
           <td>${{ pm.price }}</td>
           <td>{{ pm.stock }}</td>
           <td>

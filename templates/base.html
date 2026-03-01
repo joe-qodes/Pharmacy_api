@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>{% block title %}MedLink{% endblock %}</title>
+  <title>{% block title %}PharmAPI{% endblock %}</title>
 </head>
 <body>
 
 <nav>
-  <a href="{% url 'home' %}">MedLink</a> |
+  <a href="{% url 'home' %}">PharmAPI</a> |
   {% if user.is_authenticated %}
     {% if user.role == 'patient' %}
       <a href="{% url 'search' %}">Search Medications</a> |
