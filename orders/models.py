@@ -2,7 +2,7 @@ from django.db import models
 from accounts.models import User
 from pharmacies.models import Pharmacy
 from medications.models import Medication, PharmacyMedication
-
+from prescriptions.models import Prescription
 
 class Order(models.Model):
 
@@ -35,6 +35,14 @@ class Order(models.Model):
         PharmacyMedication,
         on_delete=models.SET_NULL,
         null=True,
+        related_name='orders'
+    )
+
+    prescription = models.ForeignKey(
+        Prescription,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
         related_name='orders'
     )
 
